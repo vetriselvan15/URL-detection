@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PhishShield AI — Advanced Phishing URL Detection & Threat Intelligence</title>
+    <meta name="description" content="AI-powered real-time phishing URL detection system utilizing machine learning ensemble classifiers, lexical feature extraction, and live network diagnostic probes.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Chart.js for ML Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <!-- Background Grid & Glowing Orbs -->
+    <div class="bg-grid"></div>
+    <div class="glow-orb orb-1"></div>
+    <div class="glow-orb orb-2"></div>
+
+    <div class="app-container">
+        <!-- Header / Navigation Bar -->
+        <header class="app-header">
+            <div class="logo-area">
+                <div class="shield-icon">
+                    <i class="fa-solid fa-shield-cat"></i>
+                </div>
+                <div class="logo-text">
+                    <h1>PhishShield <span>AI</span></h1>
+                    <span class="version-tag">v2.4 Enterprise</span>
+                </div>
+            </div>
+
+            <nav class="nav-tabs">
+                <button class="nav-btn active" data-tab="single-scan">
+                    <i class="fa-solid fa-magnifying-glass-chart"></i> URL Scanner
+                </button>
+                <button class="nav-btn" data-tab="batch-scan">
+                    <i class="fa-solid fa-list-check"></i> Batch Scan
+                </button>
+                <button class="nav-btn" data-tab="model-stats">
+                    <i class="fa-solid fa-brain"></i> ML Model Engine
+                </button>
+                <button class="nav-btn" data-tab="threat-intel">
+                    <i class="fa-solid fa-radiation"></i> Threat Intel
+                </button>
+                <button class="nav-btn" data-tab="sandbox">
+                    <i class="fa-solid fa-vial"></i> Phish Lab
+                </button>
+                <button class="nav-btn" data-tab="api-docs">
+                    <i class="fa-solid fa-code"></i> API Docs
+                </button>
+            </nav>
+
+            <div class="header-actions">
+                <button id="history-toggle-btn" class="btn btn-outline" title="Scan History">
+                    <i class="fa-solid fa-history"></i> <span id="history-count">0</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content View Areas -->
+        <main class="main-content">
+
+            <!-- TAB 1: SINGLE URL SCANNER -->
+            <section id="tab-single-scan" class="tab-pane active">
+                <div class="hero-card">
+                    <div class="hero-badge">
+                        <i class="fa-solid fa-bolt"></i> Real-Time AI Lexical & Live Diagnostic Scanner
+                    </div>
+                    <h2>Inspect Any URL for Phishing & Cyber Threats</h2>
+                    <p>Detect brand impersonation, typosquatting, homoglyphs, zero-day phishing paths, suspicious TLDs, and SSL vulnerabilities instantly.</p>
+
+                    <div class="url-input-box">
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-link input-icon"></i>
+                            <input type="url" id="target-url-input" placeholder="Enter suspicious URL (e.g. http://paypaI-security-update.xyz/login)..." autocomplete="off">
+                            <button id="clear-input-btn" class="clear-btn" style="display:none;"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                        <div class="scan-options">
+                            <label class="checkbox-container">
+                                <input type="checkbox" id="live-check-toggle" checked>
+                                <span class="checkmark"></span>
+                                Perform Live DNS, SSL & HTTP Diagnostics
+                            </label>
+                        </div>
+                        <button id="run-scan-btn" class="btn btn-primary btn-glow">
+                            <i class="fa-solid fa-radar"></i> Analyze URL
+                        </button>
+                    </div>
+
+                    <!-- Presets / Quick Test Buttons -->
+                    <div class="preset-section">
+                        <span class="preset-label"><i class="fa-solid fa-flask"></i> Quick Test Presets:</span>
+                        <div id="sample-presets-container" class="preset-pills">
+                            <!-- Injected dynamically via JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SCAN LOADING STATE -->
+                <div id="scan-loading" class="loading-container hidden">
+                    <div class="cyber-spinner"></div>
+                    <h3>Scanning Target URL</h3>
+                    <p class="loading-sub">Extracting lexical features, evaluating Random Forest ensemble, probing live DNS/SSL...</p>
+                </div>
+
+                <!-- RESULTS DASHBOARD (Hidden until scan completed) -->
+                <div id="scan-results-wrapper" class="results-wrapper hidden">
+
+                    <!-- Top Result Summary Grid -->
+                    <div class="result-summary-card" id="summary-card">
+                        <div class="gauge-section">
+                            <div class="gauge-container">
+                                <svg class="gauge-svg" viewBox="0 0 160 160">
+                                    <circle class="gauge-bg" cx="80" cy="80" r="70"></circle>
+                                    <circle id="gauge-fill" class="gauge-fill" cx="80" cy="80" r="70"></circle>
+                                </svg>
+                                <div class="gauge-text">
+                                    <span id="risk-score-num" class="score-number">0%</span>
+                                    <span class="score-label">Risk Index</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="verdict-section">
+                            <div class="verdict-header">
+                                <span id="verdict-badge" class="verdict-badge badge-safe">SAFE</span>
+                                <span id="threat-level-tag" class="threat-level">MINIMAL RISK</span>
+                            </div>
+                            <h3 id="target-url-display" class="scanned-url-text">https://example.com</h3>
+
+                            <div class="verdict-metrics">
+                                <div class="metric-pill">
+                                    <span class="metric-lbl">Model Confidence</span>
+                                    <span id="metric-confidence" class="metric-val">99.8%</span>
+                                </div>
+                                <div class="metric-pill">
+                                    <span class="metric-lbl">Execution Time</span>
+                                    <span id="metric-scan-time" class="metric-val">42ms</span>
+                                </div>
+                                <div class="metric-pill">
+                                    <span class="metric-lbl">Analysis Mode</span>
+                                    <span class="metric-val">Hybrid ML + Heuristics</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Heuristic Alert Banners -->
+                    <div id="heuristic-alerts-container" class="alerts-container hidden">
+                        <!-- Alert items injected dynamically -->
+                    </div>
+
+                    <!-- URL Structure Decompressor Card -->
+                    <div class="glass-card">
+                        <div class="card-header">
+                            <h3><i class="fa-solid fa-diagram-project"></i> URL Structural Decomposition</h3>
+                            <span class="tooltip-info" title="Lexical structure highlighting potential suspicious components"><i class="fa-solid fa-circle-info"></i></span>
+                        </div>
+                        <div class="url-decompressor-box" id="url-structure-box">
+                            <!-- Injected dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Two Column Grid for Live Diagnostics & Explainability -->
+                    <div class="dashboard-grid-2">
+                        <!-- Card 1: Live Network & Security Probes -->
+                        <div class="glass-card">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-network-wired"></i> Live Diagnostic Probes</h3>
+                                <span id="live-check-status-badge" class="status-badge badge-active">Live Active</span>
+                            </div>
+                            <div id="live-checks-container" class="probe-list">
+                                <!-- Injected dynamically -->
+                            </div>
+                        </div>
+
+                        <!-- Card 2: ML Feature Contribution & Explainability -->
+                        <div class="glass-card">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-sliders"></i> Key Threat Factor Weights</h3>
+                                <span class="status-badge">SHAP-style Feature Impact</span>
+                            </div>
+                            <div id="explainability-container" class="feature-impact-list">
+                                <!-- Injected dynamically -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Complete Lexical Features Table -->
+                    <div class="glass-card">
+                        <div class="card-header">
+                            <h3><i class="fa-solid fa-table-list"></i> Full 22-Vector Lexical Features Matrix</h3>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Feature Parameter</th>
+                                        <th>Extracted Value</th>
+                                        <th>Security Threshold / Pattern</th>
+                                        <th>Status Indicator</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="lexical-features-tbody">
+                                    <!-- Injected dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- TAB 2: BATCH SCANNER -->
+            <section id="tab-batch-scan" class="tab-pane hidden">
+                <div class="glass-card hero-batch">
+                    <h2><i class="fa-solid fa-list-check"></i> High-Throughput Batch URL Analyzer</h2>
+                    <p>Process multiple URLs simultaneously. Paste up to 50 URLs or load sample datasets to assess organization risk exposure.</p>
+
+                    <div class="batch-input-box">
+                        <textarea id="batch-urls-input" rows="8" placeholder="Enter one URL per line:&#10;https://google.com&#10;http://paypaI-security-update.xyz/login&#10;http://192.168.1.105/paypal/login.php"></textarea>
+                        
+                        <div class="batch-controls">
+                            <button id="load-batch-samples-btn" class="btn btn-outline"><i class="fa-solid fa-vial-circle-check"></i> Load Sample List</button>
+                            <button id="run-batch-btn" class="btn btn-primary btn-glow"><i class="fa-solid fa-play"></i> Run Batch Analysis</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Batch Results Container -->
+                <div id="batch-results-container" class="batch-results hidden">
+                    <!-- Batch Metrics Bar -->
+                    <div class="metrics-grid-4">
+                        <div class="metric-card card-total">
+                            <span class="m-title">Total Scanned</span>
+                            <span id="batch-total-num" class="m-val">0</span>
+                        </div>
+                        <div class="metric-card card-safe">
+                            <span class="m-title">Legitimate / Safe</span>
+                            <span id="batch-safe-num" class="m-val">0</span>
+                        </div>
+                        <div class="metric-card card-suspicious">
+                            <span class="m-title">Suspicious</span>
+                            <span id="batch-suspicious-num" class="m-val">0</span>
+                        </div>
+                        <div class="metric-card card-malicious">
+                            <span class="m-title">Phishing / Malicious</span>
+                            <span id="batch-malicious-num" class="m-val">0</span>
+                        </div>
+                    </div>
+
+                    <div class="glass-card mt-4">
+                        <div class="card-header">
+                            <h3>Batch Results Breakdown</h3>
+                            <button id="export-batch-csv-btn" class="btn btn-outline btn-sm"><i class="fa-solid fa-download"></i> Export CSV Report</button>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Target URL</th>
+                                        <th>Domain</th>
+                                        <th>Risk Score</th>
+                                        <th>Verdict</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="batch-table-body">
+                                    <!-- Injected via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: MACHINE LEARNING MODEL STATS -->
+            <section id="tab-model-stats" class="tab-pane hidden">
+                <div class="glass-card">
+                    <div class="card-header">
+                        <h2><i class="fa-solid fa-brain"></i> Machine Learning Classifier Performance</h2>
+                        <span id="model-trained-date" class="status-badge">Trained recently</span>
+                    </div>
+                    <p class="section-desc">Our model combines a Soft-Voting Ensemble of <strong>Random Forest (150 Estimators)</strong> and <strong>Gradient Boosting (120 Estimators)</strong> trained on thousands of curated legitimate and phishing URLs.</p>
+
+                    <!-- Metrics Grid -->
+                    <div class="metrics-grid-4">
+                        <div class="metric-card card-glow">
+                            <span class="m-title">Model Accuracy</span>
+                            <span id="stat-accuracy" class="m-val text-cyan">99.88%</span>
+                        </div>
+                        <div class="metric-card card-glow">
+                            <span class="m-title">Precision Rate</span>
+                            <span id="stat-precision" class="m-val text-green">100.00%</span>
+                        </div>
+                        <div class="metric-card card-glow">
+                            <span class="m-title">Recall (Sensitivity)</span>
+                            <span id="stat-recall" class="m-val text-yellow">99.75%</span>
+                        </div>
+                        <div class="metric-card card-glow">
+                            <span class="m-title">ROC-AUC Score</span>
+                            <span id="stat-roc" class="m-val text-purple">1.0000</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid-2">
+                    <!-- Feature Importances Chart Card -->
+                    <div class="glass-card">
+                        <div class="card-header">
+                            <h3><i class="fa-solid fa-chart-column"></i> Global Feature Importance Ranking</h3>
+                        </div>
+                        <div class="chart-wrapper">
+                            <canvas id="feature-importance-chart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Confusion Matrix Card -->
+                    <div class="glass-card">
+                        <div class="card-header">
+                            <h3><i class="fa-solid fa-border-all"></i> Test Set Confusion Matrix</h3>
+                        </div>
+                        <div class="confusion-matrix-box">
+                            <div class="cm-grid">
+                                <div class="cm-cell cm-header"></div>
+                                <div class="cm-cell cm-header">Pred: Safe</div>
+                                <div class="cm-cell cm-header">Pred: Phishing</div>
+                                <div class="cm-cell cm-header">Actual: Safe</div>
+                                <div class="cm-cell cm-true-neg">
+                                    <span id="cm-tn">400</span>
+                                    <span class="cm-label">True Negative</span>
+                                </div>
+                                <div class="cm-cell cm-false-pos">
+                                    <span id="cm-fp">0</span>
+                                    <span class="cm-label">False Positive</span>
+                                </div>
+                                <div class="cm-cell cm-header">Actual: Phish</div>
+                                <div class="cm-cell cm-false-neg">
+                                    <span id="cm-fn">1</span>
+                                    <span class="cm-label">False Negative</span>
+                                </div>
+                                <div class="cm-cell cm-true-pos">
+                                    <span id="cm-tp">399</span>
+                                    <span class="cm-label">True Positive</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 4: THREAT INTEL -->
+            <section id="tab-threat-intel" class="tab-pane hidden">
+                <div class="glass-card">
+                    <div class="card-header">
+                        <h2><i class="fa-solid fa-radiation"></i> Global Threat Intelligence Dashboard</h2>
+                    </div>
+                    <p class="section-desc">Real-time statistics on emerging phishing vectors, heavily targeted corporate brands, and suspicious top-level domains.</p>
+                </div>
+
+                <div class="dashboard-grid-2">
+                    <div class="glass-card">
+                        <div class="card-header">
+                            <h3><i class="fa-solid fa-bullseye"></i> Most Targeted Brands (Global Share)</h3>
+                        </div>
+                        <ul id="targeted-brands-list" class="intel-list">
+                            <!-- Injected via JS -->
+                        </ul>
+                    </div>
+
+                    <div class="glass-card">
+                        <div class="card-header">
+                            <h3><i class="fa-solid fa-triangle-exclamation"></i> Most Abused Top-Level Domains</h3>
+                        </div>
+                        <div id="abused-tlds-container" class="tld-badges-box">
+                            <!-- Injected via JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card">
+                    <div class="card-header">
+                        <h3><i class="fa-solid fa-shield-virus"></i> Anatomy of Key Phishing Attack Vectors</h3>
+                    </div>
+                    <div id="attack-vectors-grid" class="vectors-grid">
+                        <!-- Injected via JS -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 5: PHISH LAB & SANDBOX -->
+            <section id="tab-sandbox" class="tab-pane hidden">
+                <div class="glass-card">
+                    <div class="card-header">
+                        <h2><i class="fa-solid fa-vial"></i> Phishing Simulation & Vector Generator</h2>
+                    </div>
+                    <p class="section-desc">Test how attackers obfuscate URLs using homoglyph replacements, IP encodings, and domain spoofing.</p>
+                </div>
+
+                <div class="dashboard-grid-2">
+                    <!-- Homoglyph Generator -->
+                    <div class="glass-card">
+                        <div class="card-header">
+                            <h3>1. Homoglyph / Punycode Converter</h3>
+                        </div>
+                        <div class="form-group">
+                            <label>Target Domain Name:</label>
+                            <input type="text" id="homoglyph-input" value="paypal.com" class="styled-input">
+                            <button id="gen-homoglyph-btn" class="btn btn-primary mt-2"><i class="fa-solid fa-wand-magic-sparkles"></i> Generate Lookalikes</button>
+                        </div>
+                        <div id="homoglyph-output" class="code-box mt-3">Click generate to view variations...</div>
+                    </div>
+
+                    <!-- URL Obfuscator -->
+                    <div class="glass-card">
+                        <div class="card-header">
+                            <h3>2. Hex / IP Obfuscator</h3>
+                        </div>
+                        <div class="form-group">
+                            <label>Enter Clean URL:</label>
+                            <input type="text" id="obfuscator-input" value="https://example.com/login" class="styled-input">
+                            <button id="gen-obfuscated-btn" class="btn btn-primary mt-2"><i class="fa-solid fa-mask"></i> Obfuscate URL</button>
+                        </div>
+                        <div id="obfuscator-output" class="code-box mt-3">Click obfuscate to encode IP & hex...</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 6: API DOCS & TESTER -->
+            <section id="tab-api-docs" class="tab-pane hidden">
+                <div class="glass-card">
+                    <div class="card-header">
+                        <h2><i class="fa-solid fa-code"></i> Developer REST API Reference</h2>
+                    </div>
+                    <p class="section-desc">Integrate PhishShield AI into your SIEM, email gateway, browser extension, or firewall pipeline.</p>
+                    
+                    <div class="api-endpoint-card">
+                        <span class="method-tag tag-post">POST</span>
+                        <code class="endpoint-url">/api/scan</code>
+                        <p class="mt-2">Analyzes a given URL and returns complete threat risk score, verdict, and extracted features.</p>
+                        
+                        <h4>Example cURL Request:</h4>
+                        <pre class="code-block">curl -X POST http://localhost:5000/api/scan \
+  -H "Content-Type: application/json" \
+  -d '{"url": "http://paypaI-security-update.xyz/login", "live_check": true}'</pre>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- History Drawer / Modal -->
+    <div id="history-modal" class="modal-overlay hidden">
+        <div class="modal-content glass-modal">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-history"></i> Recent Scan History</h3>
+                <button id="close-modal-btn" class="close-btn"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <div id="history-list" class="history-items-list">
+                    <!-- Injected via JS -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="clear-history-btn" class="btn btn-outline btn-sm"><i class="fa-solid fa-trash-can"></i> Clear History</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application JavaScript -->
+    <script src="/js/app.js"></script>
+</body>
+</html>
