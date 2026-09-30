@@ -1,3 +1,9 @@
+// Dynamic API Host Auto-Detection (Localhost & Render Live)
+const RENDER_BACKEND_URL = 'https://url-detection-wq3r.onrender.com';
+const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname === '')
+    ? ''
+    : RENDER_BACKEND_URL;
+
 document.addEventListener('DOMContentLoaded', () => {
     initTabNavigation();
     loadSamplePresets();
@@ -37,7 +43,7 @@ async function loadSamplePresets() {
     if (!container) return;
 
     try {
-        const resp = await fetch('/api/sample-urls');
+        const resp = await fetch(`${API_BASE}/api/sample-urls`);
         const samples = await resp.json();
 
         container.innerHTML = '';
@@ -99,7 +105,7 @@ async function runSingleScan(url) {
     results.classList.add('hidden');
 
     try {
-        const resp = await fetch('/api/scan', {
+        const resp = await fetch(`${API_BASE}/api/scan`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ url, live_check: doLiveCheck })
@@ -291,7 +297,7 @@ function initBatchScanner() {
         btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing Batch...';
 
         try {
-            const resp = await fetch('/api/batch-scan', {
+            const resp = await fetch(`${API_BASE}/api/batch-scan`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ urls: lines })
@@ -375,7 +381,7 @@ function exportBatchCSV() {
 // Model Engine Stats
 async function loadModelStats() {
     try {
-        const resp = await fetch('/api/model-stats');
+        const resp = await fetch(`${API_BASE}/api/model-stats`);
         const data = await resp.json();
 
         const m = data.metrics;
@@ -440,7 +446,7 @@ function renderFeatureImportanceChart(importances) {
 // Threat Intel Tab
 async function loadThreatIntel() {
     try {
-        const resp = await fetch('/api/threat-intel');
+        const resp = await fetch(`${API_BASE}/api/threat-intel`);
         const data = await resp.json();
 
         // Top Targeted Brands
@@ -534,7 +540,7 @@ function initHistoryDrawer() {
     });
 
     clearBtn.addEventListener('click', async () => {
-        await fetch('/api/history', { method: 'DELETE' });
+        await fetch(`${API_BASE}/api/history`, { method: 'DELETE' });
         fetchHistory();
         updateHistoryBadge();
     });
@@ -543,7 +549,7 @@ function initHistoryDrawer() {
 async function fetchHistory() {
     const list = document.getElementById('history-list');
     try {
-        const resp = await fetch('/api/history');
+        const resp = await fetch(`${API_BASE}/api/history`);
         const data = await resp.json();
 
         list.innerHTML = '';
@@ -573,7 +579,7 @@ async function fetchHistory() {
 
 async function updateHistoryBadge() {
     try {
-        const resp = await fetch('/api/history');
+        const resp = await fetch(`${API_BASE}/api/history`);
         const data = await resp.json();
         document.getElementById('history-count').textContent = data.history.length;
     } catch (e) {}

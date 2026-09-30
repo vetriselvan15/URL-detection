@@ -757,6 +757,11 @@
 </div>
 
 <script>
+    const RENDER_BACKEND_URL = 'https://url-detection-wq3r.onrender.com';
+    const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname === '')
+        ? ''
+        : RENDER_BACKEND_URL;
+
     function setSample(url) {
         document.getElementById('url-input').value = url;
         document.getElementById('scan-form').dispatchEvent(new Event('submit'));
@@ -774,7 +779,7 @@
         resultContainer.style.display = 'none';
 
         try {
-            const resp = await fetch('/api/scan', {
+            const resp = await fetch(`${API_BASE}/api/scan`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ url: urlInput })
@@ -782,6 +787,7 @@
 
             const data = await resp.json();
             loading.style.display = 'none';
+
 
             if (resp.ok) {
                 renderResults(data);
@@ -935,12 +941,12 @@
             if (fileInput.files.length > 0) {
                 const formData = new FormData();
                 formData.append('file', fileInput.files[0]);
-                resp = await fetch('/api/scan-batch', {
+                resp = await fetch(`${API_BASE}/api/scan-batch`, {
                     method: 'POST',
                     body: formData
                 });
             } else {
-                resp = await fetch('/api/scan-batch', {
+                resp = await fetch(`${API_BASE}/api/scan-batch`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ urls_text: urlsText })
