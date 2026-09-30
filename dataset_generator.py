@@ -16,7 +16,7 @@ LEGITIMATE_DOMAINS = [
 
 LEGITIMATE_PATHS = [
     '', '/', '/search?q=security', '/help/center/article?id=102',
-    '/products/category/electronics', '/user/profile', '/docs/v2/api-overview',
+    '/products/categry/electronics', '/user/profile', '/docs/v2/api-overview',
     '/about-us', '/contact', '/blog/2026/cybersecurity-best-practices',
     '/pricing', '/download/desktop-app', '/resources/whitepaper.pdf',
     '/dashboard/main', '/settings/privacy', '/account/manage', '/login'
